@@ -1,6 +1,6 @@
 {
 	"AWSTemplateFormatVersion": "2010-09-09",
-	"Description": "(v4.1) AWS CFT to deploy a standalone FortiManager into an existing VPC",
+	"Description": "(v4.3) AWS CFT to deploy a standalone FortiManager into an existing VPC",
 	"Metadata": {
 		"AWS::CloudFormation::Interface": {
 			"ParameterGroups": [
@@ -161,7 +161,7 @@
 				"PAYG500Devices": "FortiManager VM64-AWSOnDemand *(6.4.*)*|e5s6s9r3hgizwpe9tavoxwkzv"
 			},
 			"7.0.x": {
-				"BYOL": "FortiManager VM64-AWS *(6.4.*)*|os40mk0fw6472m8ak2lnzp4s",
+				"BYOL": "FortiManager VM64-AWS *(7.0.*)*|os40mk0fw6472m8ak2lnzp4s",
 				"PAYG2Devices": "FortiManager VM64-AWS *(7.0.*)*|os40mk0fw6472m8ak2lnzp4s",
 				"PAYG10Devices": "FortiManager VM64-AWS *(7.0.*)*|os40mk0fw6472m8ak2lnzp4s",
 				"PAYG30Devices": "FortiManager VM64-AWS *(7.0.*)*|os40mk0fw6472m8ak2lnzp4s",
@@ -823,7 +823,7 @@
 					]
 				]
 			},
-			"Description": "Login URL for the HAmgmt interface of FortiManager1"
+			"Description": "Login URL for FortiManager"
 		}
 	}
 }
