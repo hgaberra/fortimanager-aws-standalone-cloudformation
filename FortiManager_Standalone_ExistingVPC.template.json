@@ -1,6 +1,6 @@
 {
 	"AWSTemplateFormatVersion": "2010-09-09",
-	"Description": "(v4.3) AWS CFT to deploy a standalone FortiManager into an existing VPC",
+	"Description": "(v4.4) AWS CFT to deploy a standalone FortiManager into an existing VPC",
 	"Metadata": {
 		"AWS::CloudFormation::Interface": {
 			"ParameterGroups": [
@@ -301,6 +301,69 @@
 						"CidrIp": {
 							"Ref": "VPCCIDR"
 						}
+					},
+					{
+						"Description": "Allow 10.0.0.0/8 access to tcp port 541 Fmg",
+						"IpProtocol": "tcp",
+						"FromPort": "541",
+						"ToPort": "541",
+						"CidrIp": "10.0.0.0/8"
+					},
+					{
+						"Description": "Allow 172.16.0.0/12 access to tcp port 541 Fmg",
+						"IpProtocol": "tcp",
+						"FromPort": "541",
+						"ToPort": "541",
+						"CidrIp": "172.16.0.0/12"
+					},
+					{
+						"Description": "Allow 192.168.0.0/16 access to tcp port 541 Fmg",
+						"IpProtocol": "tcp",
+						"FromPort": "541",
+						"ToPort": "541",
+						"CidrIp": "192.168.0.0/16"
+					},
+					{
+						"Description": "Allow 10.0.0.0/8 access to tcp port 514 Fmg",
+						"IpProtocol": "tcp",
+						"FromPort": "514",
+						"ToPort": "514",
+						"CidrIp": "10.0.0.0/8"
+					},
+					{
+						"Description": "Allow 172.16.0.0/12 access to tcp port 514 Fmg",
+						"IpProtocol": "tcp",
+						"FromPort": "514",
+						"ToPort": "514",
+						"CidrIp": "172.16.0.0/12"
+					},
+					{
+						"Description": "Allow 192.168.0.0/16 access to tcp port 514 Fmg",
+						"IpProtocol": "tcp",
+						"FromPort": "514",
+						"ToPort": "514",
+						"CidrIp": "192.168.0.0/16"
+					},
+					{
+						"Description": "Allow 10.0.0.0/8 access to udp port 514 Fmg",
+						"IpProtocol": "udp",
+						"FromPort": "514",
+						"ToPort": "514",
+						"CidrIp": "10.0.0.0/8"
+					},
+					{
+						"Description": "Allow 172.16.0.0/12 access to udp port 514 Fmg",
+						"IpProtocol": "udp",
+						"FromPort": "514",
+						"ToPort": "514",
+						"CidrIp": "172.16.0.0/12"
+					},
+					{
+						"Description": "Allow 192.168.0.0/16 access to udp port 514 Fmg",
+						"IpProtocol": "udp",
+						"FromPort": "514",
+						"ToPort": "514",
+						"CidrIp": "192.168.0.0/16"
 					}
 				]
 			}
@@ -699,7 +762,7 @@
 								"edit port1",
 								"set alias public",
 								"set mode dhcp",
-								"set allowaccess ping https ssh",
+								"set allowaccess ping https",
 								"next",
 								"end\\",
 								"'''",
