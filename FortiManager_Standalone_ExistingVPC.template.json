@@ -1,6 +1,6 @@
 {
 	"AWSTemplateFormatVersion": "2010-09-09",
-	"Description": "(v4.4) AWS CFT to deploy a standalone FortiManager into an existing VPC",
+	"Description": "(v4.8) AWS CFT to deploy a standalone FortiManager into an existing VPC",
 	"Metadata": {
 		"AWS::CloudFormation::Interface": {
 			"ParameterGroups": [
@@ -69,7 +69,7 @@
 		"PubliclyAvailable": {
 			"Type": "String",
 			"Default": "Yes",
-			"Description": "Select if the FMG will have a EIP to be publicly available or not.  *** If you select No, then an S3 endpoint needs to be deployed and reachable from the subnet the FortiManaager is in to successfully bootstrap.  Also, PAYG licensed instances require internet access to register with FortiCare successfully. ***",
+			"Description": "Select if the FMG will have a EIP to be publicly available or not.  *** If you select No, then an S3 endpoint needs to be deployed and reachable from the subnet the FortiManager is in to successfully bootstrap.  Also, PAYG licensed instances require internet access to register with FortiCare successfully. ***",
 			"AllowedValues": [
 				"Yes",
 				"No"
@@ -163,10 +163,10 @@
 			"7.0.x": {
 				"BYOL": "FortiManager VM64-AWS *(7.0.*)*|os40mk0fw6472m8ak2lnzp4s",
 				"PAYG2Devices": "FortiManager VM64-AWS *(7.0.*)*|os40mk0fw6472m8ak2lnzp4s",
-				"PAYG10Devices": "FortiManager VM64-AWS *(7.0.*)*|os40mk0fw6472m8ak2lnzp4s",
-				"PAYG30Devices": "FortiManager VM64-AWS *(7.0.*)*|os40mk0fw6472m8ak2lnzp4s",
-				"PAYG100Devices": "FortiManager VM64-AWS *(7.0.*)*|os40mk0fw6472m8ak2lnzp4s",
-				"PAYG500Devices": "FortiManager VM64-AWS *(7.0.*)*|os40mk0fw6472m8ak2lnzp4s"
+				"PAYG10Devices": "FortiManager VM64-AWSOnDemand *(7.0.*)*|691k7ni0x5sbcj3reejxw3cy1",
+				"PAYG30Devices": "FortiManager VM64-AWSOnDemand *(7.0.*)*|8gmpxt177zhq1vhh32l7o69wf",
+				"PAYG100Devices": "FortiManager VM64-AWSOnDemand *(7.0.*)*|d3o35cw8hzusqeiv83jl1xuwb",
+				"PAYG500Devices": "FortiManager VM64-AWSOnDemand *(7.0.*)*|e5s6s9r3hgizwpe9tavoxwkzv"
 			}
 		}
 	},
@@ -248,14 +248,23 @@
 							"Version": "2012-10-17",
 							"Statement": [
 								{
+									"Sid": "BootStrapFromS3",
+									"Effect": "Allow",
+									"Action": [
+										"s3:GetObject"
+									],
+									"Resource": "*"
+								},
+								{
+									"Sid": "SDNConnectorFortiView",
 									"Effect": "Allow",
 									"Action": [
 										"ec2:DescribeInstances",
+										"ec2:DescribeRegions",
 										"eks:DescribeCluster",
 										"eks:ListClusters",
 										"inspector:DescribeFindings",
-										"inspector:ListFindings",
-										"s3:GetObject"
+										"inspector:ListFindings"
 									],
 									"Resource": "*"
 								}
@@ -647,7 +656,7 @@
 								"        )",
 								"    except Exception as error:",
 								"        logger.error('<--!! Exception: {}'.format(error))",
-								"        responseData = {'msg':'error'}",
+								"        responseData = {'msg':'Exception: {}'.format(error)}",
 								"        cfnresponse.send(event, context, cfnresponse.FAILED, responseData)",
 								"",
 								"    if resp['ResponseMetadata']['HTTPStatusCode'] == 200 and resp['Images'] != []:",
@@ -661,8 +670,8 @@
 								"        responseData = {'ami': ami_dict[ami_list[0]]}",
 								"        cfnresponse.send(event, context, cfnresponse.SUCCESS, responseData)",
 								"    else:",
-								"        logger.error('!!--> Unable to find AMI in response! {}'.format(resp))",
-								"        responseData = {'msg':'error'}",
+								"        logger.error('!!--> Unable to find AMI {} in describe_images response! {}'.format(event['ResourceProperties']['LicenseType'],resp))",
+								"        responseData = {'msg':'Unable to find AMI {} in describe_images response! {}'.format(event['ResourceProperties']['LicenseType'],resp)}",
 								"        cfnresponse.send(event, context, cfnresponse.FAILED, responseData)",
 								""
 							]
@@ -677,7 +686,7 @@
 				},
 				"Timeout": 120,
 				"Handler": "index.handler",
-				"Runtime": "python3.8",
+				"Runtime": "python3.9",
 				"MemorySize": 128
 			}
 		},
@@ -782,8 +791,9 @@
 								"        resp = s3.put_object(Body=fmg1_conf, Bucket=event['ResourceProperties']['S3Bucket'], Key='fmg1.txt')",
 								"    except Exception as error:",
 								"        logger.error('<--!! Exception: {}'.format(error))",
-								"        responseData = {'msg':'error'}",
+								"        responseData = {'msg':'Exception: {}'.format(error)}",
 								"        cfnresponse.send(event, context, cfnresponse.FAILED, responseData)",
+								"        return None",
 								"    if resp['ResponseMetadata']['HTTPStatusCode'] == 200:",
 								"        fmg1_result = True",
 								"        logger.info('<-- s3 put_object fmg1.txt successful')",
@@ -807,7 +817,7 @@
 				},
 				"Timeout": 120,
 				"Handler": "index.handler",
-				"Runtime": "python3.8",
+				"Runtime": "python3.9",
 				"MemorySize": 128
 			}
 		},
